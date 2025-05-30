@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { POPULAR_CITIES_WITH_WEATHER } from "@/lib/constants";
-import { WeatherCardProps } from "@/lib/types";
+import { WeatherCardProps } from "@/types";
 
 function WeatherCard({ cityName, weather }: WeatherCardProps) {
   return (
@@ -43,7 +43,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold">Weather Forecast</h1>
         <p className="text-muted-foreground">Check the weather in cities around the world</p>
       </div>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Popular Cities</CardTitle>
