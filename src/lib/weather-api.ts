@@ -1,11 +1,10 @@
 import { SearchResult, WeatherData } from "../types/weather"
 
 const API_KEY = process.env.WEATHERAPI_KEY
-const BASE_URL = "https://api.weatherapi.com/v1"
+const BASE_URL = process.env.BASE_URL
 
 export async function getCurrentWeather(location: string): Promise<WeatherData> {
   const response = await fetch(`${BASE_URL}/current.json?key=${API_KEY}&q=${encodeURIComponent(location)}&aqi=no`)
-
   if (!response.ok) {
     throw new Error("Failed to fetch weather data")
   }
