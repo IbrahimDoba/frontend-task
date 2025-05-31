@@ -1,3 +1,18 @@
+export const POPULAR_CITIES = [
+  "Nigeria",
+  "Ghana",
+  "Chad",
+  "Paris",
+  "Sydney",
+  "Dubai",
+  "Singapore",
+  "Rome",
+  "Cairo",
+  "America",
+  "New York",
+  "Los Angeles",
+]
+
 // Popular cities with mock weather data
 export const POPULAR_CITIES_WITH_WEATHER = [
   {
