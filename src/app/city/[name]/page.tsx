@@ -7,9 +7,9 @@ import Image from "next/image"
 import ForecastCard from "@/components/forcast-card"
 
 interface CityPageProps {
-  params: {
+  params: Promise<{
     name: string
-  }
+  }>
 }
 
 async function CityForecast({ cityName }: { cityName: string }) {
@@ -171,8 +171,10 @@ function CityForecastSkeleton() {
   )
 }
 
-export default function CityPage({ params }: CityPageProps) {
-  const cityName = decodeURIComponent(params.name)
+export default async function CityPage({ params }: CityPageProps) {
+  // Await the params promise
+  const resolvedParams = await params
+  const cityName = decodeURIComponent(resolvedParams.name)
 
   return (
     <div className="space-y-6">
@@ -188,7 +190,9 @@ export default function CityPage({ params }: CityPageProps) {
 }
 
 export async function generateMetadata({ params }: CityPageProps) {
-  const cityName = decodeURIComponent(params.name)
+  // Await the params promise
+  const resolvedParams = await params
+  const cityName = decodeURIComponent(resolvedParams.name)
 
   try {
     const data = await getCurrentWeather(cityName)
