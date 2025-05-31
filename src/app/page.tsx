@@ -4,22 +4,8 @@ import WeatherCard from "@/components/weather-card"
 import { getCurrentWeather } from "@/lib/weather-api"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { POPULAR_CITIES } from "@/lib/constants"
 
-// Popular cities to display on the home page
-const POPULAR_CITIES = [
-  "Nigeria",
-  "Ghana",
-  "Chad",
-  "Paris",
-  "Sydney",
-  "Dubai",
-  "Singapore",
-  "Rome",
-  "Cairo",
-  "America",
-  "New York",
-  "Los Angeles",
-]
 
 async function PopularCitiesGrid() {
   // Fetch weather data for all popular cities

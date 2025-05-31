@@ -1,37 +1,55 @@
-import { Suspense } from "react"
-import { getForecast, getHistory, getCurrentWeather } from "@/lib/weather-api"
-import SearchBar from "@/components/search-bar"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import Image from "next/image"
-import ForecastCard from "@/components/forcast-card"
+import { Suspense } from "react";
+import { getForecast, getHistory, getCurrentWeather } from "@/lib/weather-api";
+import SearchBar from "@/components/search-bar";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import ForecastCard from "@/components/forcast-card";
 
 interface CityPageProps {
   params: Promise<{
-    name: string
-  }>
+    name: string;
+  }>;
+}
+
+export async function generateMetadata({ params }: CityPageProps) {
+  const resolvedParams = await params;
+  const cityName = decodeURIComponent(resolvedParams.name);
+
+  try {
+    const data = await getCurrentWeather(cityName);
+    return {
+      title: `Weather in ${data.location.name}, ${data.location.country}`,
+      description: `Current weather conditions and forecast for ${data.location.name}, ${data.location.country}`,
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: `Weather in ${cityName}`,
+      description: `Weather forecast for ${cityName}`,
+    };
+  }
 }
 
 async function CityForecast({ cityName }: { cityName: string }) {
   try {
     // Get yesterday's date
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayStr = yesterday.toISOString().split("T")[0]
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
 
     // Fetch forecast (includes today and tomorrow)
-    const forecastData = await getForecast(cityName, 2)
+    const forecastData = await getForecast(cityName, 2);
 
     // Fetch historical data for yesterday
-    const historyData = await getHistory(cityName, yesterdayStr)
+    const historyData = await getHistory(cityName, yesterdayStr);
 
-    // Extract the forecast days
-    const todayForecast = forecastData.forecast?.forecastday[0]
-    const tomorrowForecast = forecastData.forecast?.forecastday[1]
-    const yesterdayForecast = historyData.forecast?.forecastday[0]
+    const todayForecast = forecastData.forecast?.forecastday[0];
+    const tomorrowForecast = forecastData.forecast?.forecastday[1];
+    const yesterdayForecast = historyData.forecast?.forecastday[0];
 
     if (!todayForecast || !tomorrowForecast || !yesterdayForecast) {
-      throw new Error("Failed to fetch complete forecast data")
+      throw new Error("Failed to fetch complete forecast data");
     }
 
     return (
@@ -39,7 +57,9 @@ async function CityForecast({ cityName }: { cityName: string }) {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">{forecastData.location.name}</h1>
+              <h1 className="text-3xl font-bold">
+                {forecastData.location.name}
+              </h1>
               <p className="text-muted-foreground">
                 {forecastData.location.region}, {forecastData.location.country}
               </p>
@@ -53,8 +73,12 @@ async function CityForecast({ cityName }: { cityName: string }) {
                 className="mr-2"
               />
               <div>
-                <p className="text-3xl font-bold">{Math.round(forecastData.current.temp_c)}°C</p>
-                <p className="text-sm text-muted-foreground">{forecastData.current.condition.text}</p>
+                <p className="text-3xl font-bold">
+                  {Math.round(forecastData.current.temp_c)}°C
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {forecastData.current.condition.text}
+                </p>
               </div>
             </div>
           </div>
@@ -62,7 +86,9 @@ async function CityForecast({ cityName }: { cityName: string }) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
             <div>
               <p className="text-sm text-muted-foreground">Feels Like</p>
-              <p className="font-medium">{Math.round(forecastData.current.feelslike_c)}°C</p>
+              <p className="font-medium">
+                {Math.round(forecastData.current.feelslike_c)}°C
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Humidity</p>
@@ -71,7 +97,8 @@ async function CityForecast({ cityName }: { cityName: string }) {
             <div>
               <p className="text-sm text-muted-foreground">Wind</p>
               <p className="font-medium">
-                {forecastData.current.wind_kph} km/h {forecastData.current.wind_dir}
+                {forecastData.current.wind_kph} km/h{" "}
+                {forecastData.current.wind_dir}
               </p>
             </div>
             <div>
@@ -87,16 +114,18 @@ async function CityForecast({ cityName }: { cityName: string }) {
           <ForecastCard day={tomorrowForecast} title="Tomorrow" />
         </div>
       </div>
-    )
+    );
   } catch (error) {
-    console.error("Error fetching city forecast:", error)
+    console.error("Error fetching city forecast:", error);
     return (
       <Card>
         <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">Failed to load weather data. Please try again later.</p>
+          <p className="text-center text-muted-foreground">
+            Failed to load weather data. Please try again later.
+          </p>
         </CardContent>
       </Card>
-    )
+    );
   }
 }
 
@@ -168,13 +197,12 @@ function CityForecastSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default async function CityPage({ params }: CityPageProps) {
-  // Await the params promise
-  const resolvedParams = await params
-  const cityName = decodeURIComponent(resolvedParams.name)
+  const resolvedParams = await params;
+  const cityName = decodeURIComponent(resolvedParams.name);
 
   return (
     <div className="space-y-6">
@@ -186,25 +214,5 @@ export default async function CityPage({ params }: CityPageProps) {
         <CityForecast cityName={cityName} />
       </Suspense>
     </div>
-  )
-}
-
-export async function generateMetadata({ params }: CityPageProps) {
-  // Await the params promise
-  const resolvedParams = await params
-  const cityName = decodeURIComponent(resolvedParams.name)
-
-  try {
-    const data = await getCurrentWeather(cityName)
-    return {
-      title: `Weather in ${data.location.name}, ${data.location.country}`,
-      description: `Current weather conditions and forecast for ${data.location.name}, ${data.location.country}`,
-    }
-  } catch (error) {
-    console.error("Error generating metadata:", error)
-    return {
-      title: `Weather in ${cityName}`,
-      description: `Weather forecast for ${cityName}`,
-    }
-  }
+  );
 }
