@@ -69,4 +69,9 @@ export interface SearchResult {
   lon: number
   url: string
 }
-
+export interface ChatMessage {
+  id: string
+  role: "user" | "assistant"
+  content: string
+  cityLink?: string
+}
